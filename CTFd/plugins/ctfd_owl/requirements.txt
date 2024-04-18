@@ -1,2 +1,4 @@
 #docker-compose
 # The version of docker-compose in pypi is too low
+PyYAML==6.0.1
+docker==7.0.0

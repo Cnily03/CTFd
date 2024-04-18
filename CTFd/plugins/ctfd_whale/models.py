@@ -4,8 +4,8 @@ from datetime import datetime
 
 from jinja2 import Template
 
+from CTFd.models import Challenges, db
 from CTFd.utils import get_config
-from CTFd.models import db, Challenges
 
 
 class WhaleConfig(db.Model):
@@ -36,8 +36,9 @@ class WhaleRedirectTemplate(db.Model):
 
 class DynamicDockerChallenge(Challenges):
     __mapper_args__ = {"polymorphic_identity": "dynamic_docker_whale"}
-    id = db.Column(None, db.ForeignKey("challenges.id",
-                                       ondelete="CASCADE"), primary_key=True)
+    id = db.Column(
+        None, db.ForeignKey("challenges.id", ondelete="CASCADE"), primary_key=True
+    )
 
     initial = db.Column(db.Integer, default=0)
     minimum = db.Column(db.Integer, default=0)
@@ -59,8 +60,7 @@ class WhaleContainer(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     user_id = db.Column(None, db.ForeignKey("users.id"))
     challenge_id = db.Column(None, db.ForeignKey("challenges.id"))
-    start_time = db.Column(db.DateTime, nullable=False,
-                           default=datetime.utcnow)
+    start_time = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     renew_count = db.Column(db.Integer, nullable=False, default=0)
     status = db.Column(db.Integer, default=1)
     uuid = db.Column(db.String(256))
@@ -69,16 +69,19 @@ class WhaleContainer(db.Model):
 
     # Relationships
     user = db.relationship(
-        "Users", foreign_keys="WhaleContainer.user_id", lazy="select")
+        "Users", foreign_keys="WhaleContainer.user_id", lazy="select"
+    )
     challenge = db.relationship(
-        "DynamicDockerChallenge", foreign_keys="WhaleContainer.challenge_id", lazy="select"
+        "DynamicDockerChallenge",
+        foreign_keys="WhaleContainer.challenge_id",
+        lazy="select",
     )
 
     @property
     def http_subdomain(self):
-        return Template(get_config(
-            'whale:template_http_subdomain', '{{ container.uuid }}'
-        )).render(container=self)
+        return Template(
+            get_config("whale:template_http_subdomain", "{{ container.uuid }}")
+        ).render(container=self)
 
     def __init__(self, user_id, challenge_id):
         self.user_id = user_id
@@ -86,22 +89,29 @@ class WhaleContainer(db.Model):
         self.start_time = datetime.now()
         self.renew_count = 0
         self.uuid = str(uuid.uuid4())
-        self.flag = Template(get_config(
-            'whale:template_chall_flag', '{{ "flag{"+uuid.uuid4()|string+"}" }}'
-        )).render(container=self, uuid=uuid, random=random, get_config=get_config)
+        self.flag = Template(
+            get_config(
+                "whale:template_chall_flag", '{{ "flag{"+uuid.uuid4()|string+"}" }}'
+            )
+        ).render(container=self, uuid=uuid, random=random, get_config=get_config)
 
     @property
     def user_access(self):
-        return Template(WhaleRedirectTemplate.query.filter_by(
-            key=self.challenge.redirect_type
-        ).first().access_template).render(container=self, get_config=get_config)
+        return Template(
+            WhaleRedirectTemplate.query.filter_by(key=self.challenge.redirect_type)
+            .first()
+            .access_template
+        ).render(container=self, get_config=get_config)
 
     @property
     def frp_config(self):
-        return Template(WhaleRedirectTemplate.query.filter_by(
-            key=self.challenge.redirect_type
-        ).first().frp_template).render(container=self, get_config=get_config)
+        return Template(
+            WhaleRedirectTemplate.query.filter_by(key=self.challenge.redirect_type)
+            .first()
+            .frp_template
+        ).render(container=self, get_config=get_config)
 
     def __repr__(self):
-        return "<WhaleContainer ID:{0} {1} {2} {3} {4}>".format(self.id, self.user_id, self.challenge_id,
-                                                                self.start_time, self.renew_count)
+        return "<WhaleContainer ID:{0} {1} {2} {3} {4}>".format(
+            self.id, self.user_id, self.challenge_id, self.start_time, self.renew_count
+        )

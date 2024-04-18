@@ -4,8 +4,8 @@ from .frp import FrpRouter
 from .trp import TrpRouter
 
 _routers = {
-    'frp': FrpRouter,
-    'trp': TrpRouter,
+    "frp": FrpRouter,
+    "trp": TrpRouter,
 }
 
 
@@ -15,7 +15,7 @@ def instanciate(cls):
 
 @instanciate
 class Router:
-    _name = ''
+    _name = ""
     _router = None
 
     def __getattr__(self, name: str):
@@ -27,7 +27,7 @@ class Router:
 
     @staticmethod
     def reset():
-        Router._name = ''
+        Router._name = ""
         Router._router = None
 
 

@@ -2,6 +2,25 @@
 	<form method="POST" autocomplete="off" class="w-100">
         <div class="form-group">
 			<label>
+				API URL
+				<small class="form-text text-muted">
+					Frp API to connect to
+				</small>
+			</label>
+			<input type="text" class="form-control" id="frp-api-url" name="frp_api_url" value="{{ configs.get("frp_api_url") }}">
+		</div>
+
+        <div class="form-group">
+			<label>
+				Frp Direct IP Address
+				<small class="form-text text-muted">
+					For direct redirect
+				</small>
+			</label>
+			<input type="text" class="form-control" id="frp-direct-ip-address" name="frp_direct_ip_address" value="{{ configs.get("frp_direct_ip_address") }}">
+		</div>
+        <div class="form-group">
+			<label>
 				Frp Http Domain Suffix
 				<small class="form-text text-muted">
 					Container URL to show
@@ -11,12 +30,12 @@
 		</div>
         <div class="form-group">
 			<label>
-				Frp Direct IP Address
+				Http Port
 				<small class="form-text text-muted">
-					For direct redirect
+					For http redirect
 				</small>
 			</label>
-			<input type="text" class="form-control" id="frp-direct-ip-address" name="frp_direct_ip_address" value="{{ configs.get("frp_direct_ip_address") }}">
+			<input type="text" class="form-control" id="frp-http-port" name="frp_http_port" value="{{ configs.get("frp_http_port") }}">
 		</div>
 
         <div class="form-group">

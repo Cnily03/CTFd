@@ -1,6 +1,7 @@
 <div class="tab-pane fade" id="limits" role="tabpanel">
     {% for config, val in {
         "Max Container Count": ("docker_max_container_count", "The maximum number of countainers allowed on the server"),
+        "Max Opened Count": ("docker_max_opened_count", "The maximum number of countainers opened by a user"),
         "Max Renewal Times": ("docker_max_renew_count", "The maximum times a user is allowed to renew a container"),
         "Docker Container Timeout": ("docker_timeout", "A container times out after [timeout] seconds."),
     }.items() %}

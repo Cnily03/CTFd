@@ -2,7 +2,7 @@
 
 ## Note
 
-Please make sure that you have experienced the installation process on single node. This deployment method is *NOT* recommended on first try.
+Please make sure that you have experienced the installation process on single node. This deployment method is _NOT_ recommended on first try.
 
 It would be easy for you to understand what we are going to do if you have some experience in using `docker` and `frp`.
 
@@ -12,14 +12,14 @@ The goal of this advanced deployment is to deploy the CTFd and challenge contain
 
 Overall, `ctfd-whale` can be decomposed into three compnents: `CTFd`, challenge containers along with frpc, and frps itself. The three components can be deployed seperately or together to satisfy different needs.
 
-For example, if you're in a school or an organization that has a number of high-performance dedicated server *BUT* no public IP for public access, you can refer to this tutorial.
+For example, if you're in a school or an organization that has a number of high-performance dedicated server _BUT_ no public IP for public access, you can refer to this tutorial.
 
 Here are some options:
 
-* deploy frps on a server with public access
-* deploy challenge containers on a seperate sever by joining the server into the swarm you created earlier
-* deploy challenge containers on *rootless* docker
-* deploy challenge containers on a remote server with public access, *securely*
+- deploy frps on a server with public access
+- deploy challenge containers on a seperate sever by joining the server into the swarm you created earlier
+- deploy challenge containers on _rootless_ docker
+- deploy challenge containers on a remote server with public access, _securely_
 
 You could achieve the first option with little effort by deploying the frps on the server and configure frpc with a different `server_addr`.  
 In a swarm with multiple nodes, you can configure CTFd to start challenge containers on nodes you specifies randomly. Just make sure the node `whale` controlls is a `Leader`. This is not covered in this guide. You'll find it rather simple, even if you have zero experience on docker swarm.  
@@ -127,11 +127,11 @@ If you feel inconvenient, at least sign them on your personal computer, and tran
 
 #### challenge networks and frpc
 
-You could create an internal network for challenges, but you have to connect frpc to a different network *with* internet in order to map the ports so that CTFd can access the admin interface. Also, make sure frps is accessible by frpc.
+You could create an internal network for challenges, but you have to connect frpc to a different network _with_ internet in order to map the ports so that CTFd can access the admin interface. Also, make sure frps is accessible by frpc.
 
 ### Operate on `web` server
 
-Map your client certificates into docker. You might want to use `docker secrets`. Remember where the files are *inside the container*. In the case which you use `docker secrets`, the directory is `/run/secrets`.
+Map your client certificates into docker. You might want to use `docker secrets`. Remember where the files are _inside the container_. In the case which you use `docker secrets`, the directory is `/run/secrets`.
 
 You may also delete everything related to `frp` like `frp_network` since we are not going to run challenge containers on `web` server anymore. But if you just has one public IP for `web` server, you can leave `frps` service running.
 

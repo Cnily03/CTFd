@@ -1,13 +1,13 @@
-from CTFd.models import (
-    db,
-    Challenges,
-)
 import datetime
+
+from CTFd.models import Challenges, db
+
 
 class DynamicCheckChallenge(Challenges):
     __mapper_args__ = {"polymorphic_identity": "dynamic_docker_owl"}
-    id = db.Column(None, db.ForeignKey("challenges.id",
-                                       ondelete="CASCADE"), primary_key=True)
+    id = db.Column(
+        None, db.ForeignKey("challenges.id", ondelete="CASCADE"), primary_key=True
+    )
 
     # deployments settings
     deployment = db.Column(db.String(32))
@@ -26,6 +26,7 @@ class DynamicCheckChallenge(Challenges):
         super(DynamicCheckChallenge, self).__init__(**kwargs)
         self.initial = kwargs["value"]
 
+
 class OwlConfigs(db.Model):
     key = db.Column(db.String(length=128), primary_key=True)
     value = db.Column(db.Text)
@@ -34,14 +35,17 @@ class OwlConfigs(db.Model):
         self.key = key
         self.value = value
 
+
 class OwlContainers(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     challenge_id = db.Column(db.Integer, db.ForeignKey("challenges.id"))
-    docker_id = db.Column(db.String(32))
+    docker_id = db.Column(db.String(36))
     ip = db.Column(db.String(32))
     port = db.Column(db.Integer)
-    start_time = db.Column(db.DateTime, nullable=False, default=datetime.datetime.utcnow)
+    start_time = db.Column(
+        db.DateTime, nullable=False, default=datetime.datetime.utcnow
+    )
     renew_count = db.Column(db.Integer, nullable=False, default=0)
     flag = db.Column(db.String(128), nullable=False)
 
@@ -53,4 +57,3 @@ class OwlContainers(db.Model):
 
     def __init__(self, *args, **kwargs):
         super(OwlContainers, self).__init__(**kwargs)
-

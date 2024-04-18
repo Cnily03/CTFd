@@ -1,4 +1,4 @@
-from docker.errors import DockerException, TLSParameterError, APIError, requests
+from docker.errors import APIError, DockerException, TLSParameterError, requests
 
 from CTFd.utils import get_config
 
@@ -12,23 +12,23 @@ class WhaleChecks:
         try:
             client = get_docker_client()
         except TLSParameterError as e:
-            return f'Docker TLS Parameters incorrect ({e})'
+            return f"Docker TLS Parameters incorrect ({e})"
         except DockerException as e:
-            return f'Docker API url incorrect ({e})'
+            return f"Docker API url incorrect ({e})"
         try:
             client.ping()
         except (APIError, requests.RequestException):
-            return f'Unable to connect to Docker API, check your API connectivity'
+            return "Unable to connect to Docker API, check your API connectivity"
 
         credentials = get_config("whale:docker_credentials")
-        if credentials and credentials.count(':') == 1:
+        if credentials and credentials.count(":") == 1:
             try:
-                client.login(*credentials.split(':'))
+                client.login(*credentials.split(":"))
             except DockerException:
-                return f'Unable to log into docker registry, check your credentials'
-        swarm = client.info()['Swarm']
-        if not swarm['ControlAvailable']:
-            return f'Docker swarm not available. You should initialize a swarm first. ($ docker swarm init)'
+                return "Unable to log into docker registry, check your credentials"
+        swarm = client.info()["Swarm"]
+        if not swarm["ControlAvailable"]:
+            return "Docker swarm not available. You should initialize a swarm first. ($ docker swarm init)"
 
     @staticmethod
     def check_frp_connection():
@@ -40,7 +40,7 @@ class WhaleChecks:
     def perform():
         errors = []
         for attr in dir(WhaleChecks):
-            if attr.startswith('check_'):
+            if attr.startswith("check_"):
                 err = getattr(WhaleChecks, attr)()
                 if err:
                     errors.append(err)

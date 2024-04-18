@@ -1,37 +1,41 @@
-from CTFd.plugins.challenges import BaseChallenge
-from CTFd.plugins.flags import get_flag_class, FlagException
-from CTFd.utils.user import get_ip
+import math
+
 from flask import Blueprint, current_app
-from CTFd.utils.modes import get_model
+
 from CTFd.models import (
-    db,
-    Solves,
+    ChallengeFiles,
+    Challenges,
     Fails,
     Flags,
-    Challenges,
-    ChallengeFiles,
-    Tags,
     Hints,
-    Users,
     Notifications,
+    Solves,
+    Tags,
+    Users,
+    db,
 )
-import math
+from CTFd.plugins.challenges import BaseChallenge
+from CTFd.plugins.flags import FlagException, get_flag_class
+from CTFd.utils.modes import get_model
 from CTFd.utils.uploads import delete_file
-from .models import DynamicCheckChallenge, OwlContainers
+from CTFd.utils.user import get_ip
+
 from .extensions import get_mode
+from .models import DynamicCheckChallenge, OwlContainers
+
 
 class DynamicCheckValueChallenge(BaseChallenge):
     id = "dynamic_docker_owl"  # Unique identifier used to register challenges
     name = "dynamic_docker_owl"  # Name of a challenge type
     # Route at which files are accessible. This must be registered using register_plugin_assets_directory()
-    
+
     # Blueprint used to access the static_folder directory.
     blueprint = Blueprint(
         "ctfd-owl-challenge",
         __name__,
         template_folder="templates",
         static_folder="assets",
-        url_prefix="/plugins/ctfd_owl"
+        url_prefix="/plugins/ctfd_owl",
     )
     challenge_model = DynamicCheckChallenge
 
@@ -88,20 +92,20 @@ class DynamicCheckValueChallenge(BaseChallenge):
 
         solve_count = (
             Solves.query.join(Model, Solves.account_id == Model.id)
-                .filter(
+            .filter(
                 Solves.challenge_id == challenge.id,
                 Model.hidden == False,
                 Model.banned == False,
             )
-                .count()
+            .count()
         )
 
         # It is important that this calculation takes into account floats.
         # Hence this file uses from __future__ import division
         value = (
-                        ((challenge.minimum - challenge.initial) / (challenge.decay ** 2))
-                        * (solve_count ** 2)
-                ) + challenge.initial
+            ((challenge.minimum - challenge.initial) / (challenge.decay**2))
+            * (solve_count**2)
+        ) + challenge.initial
 
         value = math.ceil(value)
 
@@ -151,7 +155,7 @@ class DynamicCheckValueChallenge(BaseChallenge):
         submission = data["submission"].strip()
         user_id = get_mode()
 
-        if chal.flag_type == 'static':
+        if chal.flag_type == "static":
             flags = Flags.query.filter_by(challenge_id=challenge.id).all()
             for flag in flags:
                 try:
@@ -161,7 +165,9 @@ class DynamicCheckValueChallenge(BaseChallenge):
                     return False, str(e)
             return False, "Incorrect"
 
-        flag = OwlContainers.query.filter_by(user_id=user_id, challenge_id=challenge.id).first()
+        flag = OwlContainers.query.filter_by(
+            user_id=user_id, challenge_id=challenge.id
+        ).first()
         subflag = OwlContainers.query.filter_by(flag=submission).first()
 
         if subflag:
@@ -169,13 +175,13 @@ class DynamicCheckValueChallenge(BaseChallenge):
                 fflag = flag.flag
             except Exception as e:
                 fflag = ""
-            if (fflag == submission):
+            if fflag == submission:
                 return True, "Correct"
             else:
                 flaguser = Users.query.filter_by(id=user_id).first()
                 subuser = Users.query.filter_by(id=subflag.user_id).first()
 
-                if (flaguser.name == subuser.name):
+                if flaguser.name == subuser.name:
                     return False, "Incorrect Challenge"
                 else:
                     if flaguser.type == "admin":
@@ -184,8 +190,15 @@ class DynamicCheckValueChallenge(BaseChallenge):
                     db.session.add(Notifications(title="Cheat Found", content=message))
                     flaguser.banned = True
                     db.session.commit()
-                    messages = {"title": "Cheat Found", "content": message, "type": "background", "sound": True}
-                    current_app.events_manager.publish(data=messages, type="notification")
+                    messages = {
+                        "title": "Cheat Found",
+                        "content": message,
+                        "type": "background",
+                        "sound": True,
+                    }
+                    current_app.events_manager.publish(
+                        data=messages, type="notification"
+                    )
                     return False, "Cheated"
         elif flag:
             return False, "Incorrect"
@@ -219,12 +232,12 @@ class DynamicCheckValueChallenge(BaseChallenge):
 
         solve_count = (
             Solves.query.join(Model, Solves.account_id == Model.id)
-                .filter(
+            .filter(
                 Solves.challenge_id == challenge.id,
                 Model.hidden == False,
                 Model.banned == False,
             )
-                .count()
+            .count()
         )
 
         # We subtract -1 to allow the first solver to get max point value
@@ -233,8 +246,8 @@ class DynamicCheckValueChallenge(BaseChallenge):
         # It is important that this calculation takes into account floats.
         # Hence this file uses from __future__ import division
         value = (
-                        ((chal.minimum - chal.initial) / (chal.decay ** 2)) * (solve_count ** 2)
-                ) + chal.initial
+            ((chal.minimum - chal.initial) / (chal.decay**2)) * (solve_count**2)
+        ) + chal.initial
 
         value = math.ceil(value)
 

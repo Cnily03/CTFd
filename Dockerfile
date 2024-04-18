@@ -1,19 +1,17 @@
 FROM python:3.9-slim-buster as build
 
-RUN sed -i 's/deb.debian.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
-
 WORKDIR /opt/CTFd
 
 RUN mkdir -p /opt/CTFd /var/log/CTFd /var/uploads
 
 # hadolint ignore=DL3008
-RUN apt-get update \
+RUN sed -i "s|http://deb.debian.org/debian|https://mirrors.tuna.tsinghua.edu.cn/debian|g" /etc/apt/sources.list \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
         build-essential \
         libffi-dev \
         libssl-dev \
         git \
-        docker-compose \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* \
     && python -m venv /opt/venv
@@ -22,26 +20,42 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 COPY . /opt/CTFd
 
-RUN pip install --upgrade pip -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple --use-pep517 --no-cache-dir \
-    pip install --no-cache-dir -r requirements.txt -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple --use-pep517 --no-cache-dir \
+RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple \
+    && pip install --upgrade pip --use-pep517 --no-cache-dir \
+    pip install --no-cache-dir -r requirements.txt --use-pep517 --no-cache-dir \
     && for d in CTFd/plugins/*; do \
         if [ -f "$d/requirements.txt" ]; then \
-            pip install --no-cache-dir -r "$d/requirements.txt" -i https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple --use-pep517 --no-cache-dir;\
+            pip install --no-cache-dir -r "$d/requirements.txt" --use-pep517 --no-cache-dir;\
         fi; \
     done;
 
 
 FROM python:3.9-slim-buster as release
 
-RUN sed -i 's/deb.debian.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
-
 WORKDIR /opt/CTFd
 
 # hadolint ignore=DL3008
-RUN apt-get update \
+RUN sed -i "s|http://deb.debian.org/debian|https://mirrors.tuna.tsinghua.edu.cn/debian|g" /etc/apt/sources.list \
+    && apt-get update \
     && apt-get install -y --no-install-recommends \
+        ca-certificates \
+        curl \
         libffi6 \
         libssl1.1 \
+    && install -m 0755 -d /etc/apt/keyrings \
+    && curl -fsSL https://download.docker.com/linux/debian/gpg -o /etc/apt/keyrings/docker.asc \
+    && chmod a+r /etc/apt/keyrings/docker.asc \
+    && echo \
+        "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/debian \
+        $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+        tee /etc/apt/sources.list.d/docker.list > /dev/null \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+        docker-ce \
+        docker-ce-cli \
+        containerd.io \
+        docker-buildx-plugin \
+        docker-compose-plugin \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 

@@ -86,7 +86,7 @@ function loadInfo () {
             panel_html += '<button type="button" class="btn btn-danger card-link" id="owl-button-destroy" onclick="CTFd._internal.challenge.destroy()">Destroy</button>' +
                           '<button type="button" class="btn btn-success card-link" id="owl-button-renew" onclick="CTFd._internal.challenge.renew()">Renew</button>';
             CTFd.lib.$('#owl-panel').html(panel_html);
-            
+
             if(window.t !== undefined) {
                 clearInterval(window.t);
                 window.t = undefined;

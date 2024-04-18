@@ -22,8 +22,9 @@
 			<table class="table table-striped">
 				<thead>
 					<tr>
-						<td scope="col" width="10px"><b>Place</b></td>
+						<td scope="col" width="10px"><b>Rank</b></td>
 						<td scope="col"><b>{{ get_mode_as_word(capitalize=True) }}</b></td>
+						<td scope="col"><b>Affiliation</b></td>
 						<td scope="col"><b>Score</b></td>
 					</tr>
 				</thead>
@@ -48,6 +49,7 @@
 								{% endif %}
 							</a>
 						</td>
+						<td>{{ standing.affiliation }}</td>
 						<td>{{ standing.score }}</td>
 					</tr>
 				{% endfor %}

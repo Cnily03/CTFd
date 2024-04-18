@@ -1,14 +1,12 @@
 from flask import Blueprint
 
-from CTFd.models import (
-    db,
-    Flags,
-)
+from CTFd.models import Flags, db
 from CTFd.plugins.challenges import BaseChallenge
 from CTFd.plugins.dynamic_challenges import DynamicValueChallenge
 from CTFd.plugins.flags import get_flag_class
 from CTFd.utils import user as current_user
-from .models import WhaleContainer, DynamicDockerChallenge
+
+from .models import DynamicDockerChallenge, WhaleContainer
 from .utils.control import ControlUtil
 
 
@@ -104,5 +102,5 @@ class DynamicValueDockerChallenge(BaseChallenge):
         for container in WhaleContainer.query.filter_by(
             challenge_id=challenge.id
         ).all():
-            ControlUtil.try_remove_container(container.user_id)
+            ControlUtil.try_remove_container(container.user_id, container.challenge_id)
         super().delete(challenge)

@@ -63,6 +63,7 @@
                     <td class="text-center">
                         {{ container.renew_count }}&nbsp;
                         <a class="renew-container" container-id="{{ container.id }}" data-toggle="tooltip"
+                           challenge-id="{{ container.challenge.id }}"
                            user-id="{{ container.user.id }}" data-placement="top"
                            title="Renew Container #{{ container.id }}">
                             <i class="fas fa-sync"></i>
@@ -70,7 +71,7 @@
                     </td>
                     <td class="text-center">
                         <a class="delete-container" container-id="{{ container.id }}" data-toggle="tooltip"
-                           user-id="{{ container.user.id }}" data-placement="top"
+                           user-id="{{ container.user.id }}" challenge-id="{{ container.challenge.id }}" data-placement="top"
                            title="Destroy Container #{{ container.id }}">
                             <i class="fas fa-times"></i>
                         </a>

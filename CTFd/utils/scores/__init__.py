@@ -85,6 +85,7 @@ def get_standings(count=None, admin=False, fields=None):
                 Model.id.label("account_id"),
                 Model.oauth_id.label("oauth_id"),
                 Model.name.label("name"),
+                Model.affiliation.label("affiliation"),
                 Model.hidden,
                 Model.banned,
                 sumscores.columns.score,
@@ -103,6 +104,7 @@ def get_standings(count=None, admin=False, fields=None):
                 Model.id.label("account_id"),
                 Model.oauth_id.label("oauth_id"),
                 Model.name.label("name"),
+                Model.affiliation.label("affiliation"),
                 sumscores.columns.score,
                 *fields,
             )
@@ -177,6 +179,7 @@ def get_team_standings(count=None, admin=False, fields=None):
                 Teams.id.label("team_id"),
                 Teams.oauth_id.label("oauth_id"),
                 Teams.name.label("name"),
+                Teams.affiliation.label("affiliation"),
                 Teams.hidden,
                 Teams.banned,
                 sumscores.columns.score,
@@ -195,6 +198,7 @@ def get_team_standings(count=None, admin=False, fields=None):
                 Teams.id.label("team_id"),
                 Teams.oauth_id.label("oauth_id"),
                 Teams.name.label("name"),
+                Teams.affiliation.label("affiliation"),
                 sumscores.columns.score,
                 *fields,
             )
@@ -268,6 +272,7 @@ def get_user_standings(count=None, admin=False, fields=None):
                 Users.oauth_id.label("oauth_id"),
                 Users.name.label("name"),
                 Users.team_id.label("team_id"),
+                Users.affiliation.label("affiliation"),
                 Users.hidden,
                 Users.banned,
                 sumscores.columns.score,
@@ -287,6 +292,7 @@ def get_user_standings(count=None, admin=False, fields=None):
                 Users.oauth_id.label("oauth_id"),
                 Users.name.label("name"),
                 Users.team_id.label("team_id"),
+                Users.affiliation.label("affiliation"),
                 sumscores.columns.score,
                 *fields,
             )

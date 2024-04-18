@@ -31,8 +31,8 @@ $(".click-copy").click(function (e) {
     copyToClipboard(e, $(this).data("copy"));
 })
 
-async function delete_container(user_id) {
-    let response = await CTFd.fetch("/plugins/ctfd_owl/admin/containers?user_id=" + user_id, {
+async function delete_container(user_id, challenge_id) {
+    let response = await CTFd.fetch(`/plugins/ctfd_owl/admin/containers?user_id=${user_id}&challenge_id=${challenge_id}`, {
 		method: "DELETE",
 		credentials: "same-origin",
 		headers: {
@@ -44,8 +44,8 @@ async function delete_container(user_id) {
     return response;
 }
 
-async function renew_container(user_id) {
-    let response = await CTFd.fetch("/plugins/ctfd_owl/admin/containers?user_id=" + user_id, {
+async function renew_container(user_id, challenge_id) {
+    let response = await CTFd.fetch(`/plugins/ctfd_owl/admin/containers?user_id=${user_id}&challenge_id=${challenge_id}`, {
 		method: "PATCH",
 		credentials: "same-origin",
 		headers: {
@@ -61,6 +61,7 @@ $(".delete-container").click(function(e) {
     e.preventDefault();
     var container_id = $(this).attr("container-id");
     var user_id = $(this).attr("user-id");
+    var challenge_id = $(this).attr("challenge-id");
 
     var body = "<span>Are you sure you want to delete <strong>Container #{0}</strong>?</span>".format(
         htmlentities(container_id)
@@ -70,7 +71,7 @@ $(".delete-container").click(function(e) {
         title: "Destroy Container",
         body: body,
         success: async function () {
-            let response = await delete_container(user_id);
+            let response = await delete_container(user_id, challenge_id);
             if (!response.success) {
 				CTFd.ui.ezq.ezAlert({
 					title: "Error",
@@ -87,6 +88,7 @@ $(".renew-container").click(function(e) {
     e.preventDefault();
     var container_id = $(this).attr("container-id");
     var user_id = $(this).attr("user-id");
+    var challenge_id = $(this).attr("challenge-id");
 
     var body = "<span>Are you sure you want to renew <strong>Container #{0}</strong>?</span>".format(
         htmlentities(container_id)
@@ -96,7 +98,7 @@ $(".renew-container").click(function(e) {
         title: "Renew Container",
         body: body,
         success: async function () {
-            let response = await renew_container(user_id);
+            let response = await renew_container(user_id, challenge_id);
             if (!response.success) {
 				CTFd.ui.ezq.ezAlert({
 					title: "Error",
@@ -111,13 +113,13 @@ $(".renew-container").click(function(e) {
 
 $('#containers-renew-button').click(function (e) {
     let users = $("input[data-user-id]:checked").map(function () {
-        return $(this).data("user-id");
+        return {user_id:$(this).data("user-id"), challenge_id:$(this).data("challenge-id")};
     });
     CTFd.ui.ezq.ezQuery({
         title: "Renew Containers",
         body: `Are you sure you want to renew the selected ${users.length} container(s)?`,
         success: async function () {
-            await Promise.all(users.toArray().map((user) => renew_container(user)));
+            await Promise.all(users.toArray().map((u) => renew_container(u.user_id, u.challenge_id)));
             location.reload();
         }
     });
@@ -125,13 +127,13 @@ $('#containers-renew-button').click(function (e) {
 
 $('#containers-delete-button').click(function (e) {
     let users = $("input[data-user-id]:checked").map(function () {
-        return $(this).data("user-id");
+        return {user_id:$(this).data("user-id"), challenge_id:$(this).data("challenge-id")};
     });
     CTFd.ui.ezq.ezQuery({
         title: "Delete Containers",
         body: `Are you sure you want to delete the selected ${users.length} container(s)?`,
         success: async function () {
-            await Promise.all(users.toArray().map((user) => delete_container(user)));
+            await Promise.all(users.toArray().map((u) => delete_container(u.user_id, u.challenge_id)));
             location.reload();
         }
     });

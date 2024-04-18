@@ -51,7 +51,7 @@ msgstr "当前密码"
 #: CTFd/themes/core-beta/templates/teams/teams.html:51
 #: CTFd/themes/core-beta/templates/users/users.html:48
 msgid "Affiliation"
-msgstr "隶属关系"
+msgstr "单位"
 
 #: CTFd/forms/self.py:22 CTFd/forms/teams.py:119 CTFd/forms/teams.py:192
 #: CTFd/forms/teams.py:205 CTFd/forms/users.py:139
@@ -225,7 +225,7 @@ msgstr "提供您当前的队伍密码（或您的密码）以更新您团队的
 
 #: CTFd/forms/teams.py:114
 msgid "Your team's affiliation publicly shown to other competitors"
-msgstr "向其他参赛者公开展示您的队伍隶属关系"
+msgstr "向其他参赛者公开展示您的队伍所在单位"
 
 #: CTFd/forms/teams.py:120
 msgid "Your team's website publicly shown to other competitors"

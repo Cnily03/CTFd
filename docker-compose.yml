@@ -4,54 +4,57 @@ services:
     build: .
     user: root
     restart: always
-    #ports:
-    #  - "8000:8000"
+    ports:
+     - "8000:8000"
     environment:
+      - TZ=Asia/Shanghai
       - UPLOAD_FOLDER=/var/uploads
+      # 修改数据库密码后替换此处的值
       - DATABASE_URL=mysql+pymysql://ctfd:ctfd@db/ctfd
       - REDIS_URL=redis://cache:6379
       - WORKERS=1
       - LOG_FOLDER=/var/log/CTFd
-      - PROBLEM_DOCKER_RUN_FOLDER=/tmp
+      - PROBLEM_FOLDER=/var/problem
+      - PROBLEM_DOCKER_RUN_FOLDER=/tmp/ctfd-problem-docker-run # 需要同时在宿主机和容器中创建
       - ACCESS_LOG=-
       - ERROR_LOG=-
       - REVERSE_PROXY=true
-      - CTFD_URL=ctfd.test.com
-      - DIRECT_URL=direct.test.com
-      - DYNAMIC_URL=dynamic.test.com
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
       - .data/CTFd/logs:/var/log/CTFd
       - .data/CTFd/uploads:/var/uploads
-      - .:/opt/CTFd
-      #- .:/opt/CTFd:ro
-      - /var/run/docker.sock:/var/run/docker.sock
+      - .data/CTFd/problem:/var/problem
+      - /tmp/ctfd-problem-docker-run:/tmp/ctfd-problem-docker-run
+      - .:/opt/CTFd:ro
     depends_on:
       - db
     networks:
         default:
         internal:
+        frp-control:
+            ipv4_address: 172.1.0.2
 
-  nginx:
-    image: nginx:stable
-    restart: always
-    volumes:
-      - ./conf/nginx/http.conf:/etc/nginx/nginx.conf
-    ports:
-      - 80:80
-    depends_on:
-      - ctfd
-      - frps
-    networks:
-        default:
-        internal:
+  # nginx:
+  #   image: nginx:stable
+  #   restart: always
+  #   volumes:
+  #     - ./conf/nginx/http.conf:/etc/nginx/nginx.conf
+  #   ports:
+  #     - 80:80
+  #   depends_on:
+  #     - ctfd
+  #     - frps
+  #   networks:
+  #       default:
+  #       internal:
 
   db:
     image: mariadb:10.4.12
     restart: always
     environment:
-      - MYSQL_ROOT_PASSWORD=ctfd
+      - MYSQL_ROOT_PASSWORD=ctfd # 替换为高强度密码
       - MYSQL_USER=ctfd
-      - MYSQL_PASSWORD=ctfd
+      - MYSQL_PASSWORD=ctfd # 替换密码
       - MYSQL_DATABASE=ctfd
     volumes:
       - .data/mysql:/var/lib/mysql
@@ -69,34 +72,59 @@ services:
         internal:
 
   frpc:
-    image: snowdreamtech/frpc:0.41.0
+    image: stilleshan/frpc:0.57.0
     restart: always
     volumes:
-      - ./frpc:/etc/frp/
+      - ./conf/frp:/conf/
+    entrypoint:
+        - /frp/frpc
+        - -c
+        - /conf/frpc.ini
+    depends_on:
+      - frps
     networks:
-      frp:
-      internal:
-      containers:
+        frp-control:
+            ipv4_address: 172.1.0.3
+        frp-containers:
+        frp-tunnel:
 
   frps:
-    image: snowdreamtech/frps:0.41.0
+    image: stilleshan/frps:0.57.0
     restart: always
     volumes:
-      - ./frps:/etc/frp/
+      - ./conf/frp:/conf/
+    entrypoint:
+        - /frp/frps
+        - -c
+        - /conf/frps.ini
     ports:
-      - 8009:8009
-      - 10001-10200:10001-10200
+      # 这里映射端口的范围与想要创建的实例的端口范围一致（非 compose 容器端口）
+      - "31000-31199:31000-31199"
+      # - "9123:9123"
+      - "81:80"
     networks:
-      frp:
-      default:
+        frp-tunnel:
+            # ipv4_address: 172.3.0.2
 
 networks:
     default:
     internal:
         internal: true
-    frp:
-        internal: true
-    containers:
-        internal: true
+    frp-control:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 172.1.0.0/16
+    frp-containers:
         driver: overlay
+        internal: true # 如果容器允许出网，可以关闭该配置
         attachable: true
+        # ipam:
+        #     config:
+        #         - subnet: 172.2.0.0/16
+    frp-tunnel:
+        driver: bridge
+        # ipam:
+        #     config:
+        #         - subnet: 172.3.0.0/16
+

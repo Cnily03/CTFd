@@ -1,5 +1,4 @@
 #!/bin/bash
-sh sed.sh
 set -euo pipefail
 
 WORKERS=${WORKERS:-1}

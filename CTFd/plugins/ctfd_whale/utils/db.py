@@ -2,6 +2,7 @@ import datetime
 
 from CTFd.models import db
 from CTFd.utils import get_config
+
 from ..models import WhaleContainer, WhaleRedirectTemplate
 
 
@@ -15,10 +16,19 @@ class DBContainer:
         return container
 
     @staticmethod
-    def get_current_containers(user_id):
+    def get_container(user_id, challenge_id):
+        res = DBContainer.get_current_containers(user_id, challenge_id)
+        if res is None:
+            return None
+        return res[0]
+
+    @staticmethod
+    def get_current_containers(user_id, challenge_id=None):
         q = db.session.query(WhaleContainer)
         q = q.filter(WhaleContainer.user_id == user_id)
-        return q.first()
+        if challenge_id is not None:
+            q = q.filter(WhaleContainer.challenge_id == challenge_id)
+        return q.all()
 
     @staticmethod
     def get_container_by_port(port):
@@ -39,8 +49,8 @@ class DBContainer:
 
         q = db.session.query(WhaleContainer)
         q = q.filter(
-            WhaleContainer.start_time <
-            datetime.datetime.now() - datetime.timedelta(seconds=timeout)
+            WhaleContainer.start_time
+            < datetime.datetime.now() - datetime.timedelta(seconds=timeout)
         )
         return q.all()
 
@@ -50,8 +60,8 @@ class DBContainer:
 
         q = db.session.query(WhaleContainer)
         q = q.filter(
-            WhaleContainer.start_time >=
-            datetime.datetime.now() - datetime.timedelta(seconds=timeout)
+            WhaleContainer.start_time
+            >= datetime.datetime.now() - datetime.timedelta(seconds=timeout)
         )
         return q.all()
 
@@ -66,8 +76,8 @@ class DBContainer:
 
         q = db.session.query(WhaleContainer)
         q = q.filter(
-            WhaleContainer.start_time >=
-            datetime.datetime.now() - datetime.timedelta(seconds=timeout)
+            WhaleContainer.start_time
+            >= datetime.datetime.now() - datetime.timedelta(seconds=timeout)
         )
         q = q.slice(page_start, page_end)
         return q.all()
@@ -78,8 +88,8 @@ class DBContainer:
 
         q = db.session.query(WhaleContainer)
         q = q.filter(
-            WhaleContainer.start_time >=
-            datetime.datetime.now() - datetime.timedelta(seconds=timeout)
+            WhaleContainer.start_time
+            >= datetime.datetime.now() - datetime.timedelta(seconds=timeout)
         )
         return q.count()
 
@@ -93,9 +103,7 @@ class DBRedirectTemplate:
     def create_template(name, access_template, frp_template):
         if WhaleRedirectTemplate.query.filter_by(key=name).first():
             return  # already existed
-        db.session.add(WhaleRedirectTemplate(
-            name, access_template, frp_template
-        ))
+        db.session.add(WhaleRedirectTemplate(name, access_template, frp_template))
         db.session.commit()
 
     @staticmethod

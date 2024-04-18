@@ -1,6 +1,5 @@
 import datetime
 import os
-import posixpath
 import string
 import time
 from pathlib import PurePath
@@ -8,6 +7,7 @@ from shutil import copyfileobj, rmtree
 from urllib.parse import urlparse
 
 import boto3
+import posixpath
 from botocore.client import Config
 from flask import current_app, redirect, send_file
 from freezegun import freeze_time

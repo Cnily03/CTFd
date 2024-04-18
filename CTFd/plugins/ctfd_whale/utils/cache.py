@@ -1,19 +1,21 @@
 import ipaddress
 import warnings
+
+from redis.exceptions import LockError
+
 from CTFd.cache import cache
 from CTFd.utils import get_config
 from flask_redis import FlaskRedis
-from redis.exceptions import LockError
 
 from .db import DBContainer
 
 
 class CacheProvider:
     def __init__(self, app, *args, **kwargs):
-        if app.config['CACHE_TYPE'] == 'redis':
+        if app.config["CACHE_TYPE"] == "redis":
             self.provider = RedisCacheProvider(app, *args, **kwargs)
-        elif app.config['CACHE_TYPE'] in ['filesystem', 'simple']:
-            if not hasattr(CacheProvider, 'cache'):
+        elif app.config["CACHE_TYPE"] in ["filesystem", "simple"]:
+            if not hasattr(CacheProvider, "cache"):
                 CacheProvider.cache = {}
             self.provider = FilesystemCacheProvider(app, *args, **kwargs)
             self.init_port_sets()
@@ -26,25 +28,33 @@ class CacheProvider:
         for container in containers:
             if container.port != 0:
                 used_port_list.append(container.port)
-        for port in range(int(get_config("whale:frp_direct_port_minimum", 29000)),
-                          int(get_config("whale:frp_direct_port_maximum", 28000)) + 1):
+        for port in range(
+            int(get_config("whale:frp_direct_port_minimum", 29000)),
+            int(get_config("whale:frp_direct_port_maximum", 28000)) + 1,
+        ):
             if port not in used_port_list:
                 self.add_available_port(port)
 
         from .docker import get_docker_client
+
         client = get_docker_client()
 
         docker_subnet = get_config("whale:docker_subnet", "174.1.0.0/16")
         docker_subnet_new_prefix = int(
-            get_config("whale:docker_subnet_new_prefix", "24"))
+            get_config("whale:docker_subnet_new_prefix", "24")
+        )
 
         exist_networks = []
         available_networks = []
 
-        for network in client.networks.list(filters={'label': 'prefix'}):
-            exist_networks.append(str(network.attrs['Labels']['prefix']))
+        for network in client.networks.list(filters={"label": "prefix"}):
+            exist_networks.append(str(network.attrs["Labels"]["prefix"]))
 
-        for network in list(ipaddress.ip_network(docker_subnet).subnets(new_prefix=docker_subnet_new_prefix)):
+        for network in list(
+            ipaddress.ip_network(docker_subnet).subnets(
+                new_prefix=docker_subnet_new_prefix
+            )
+        ):
             if str(network) not in exist_networks:
                 available_networks.append(str(network))
 
@@ -57,11 +67,12 @@ class CacheProvider:
 class FilesystemCacheProvider:
     def __init__(self, app, *args, **kwargs):
         warnings.warn(
-            '\n[CTFd Whale] Warning: looks like you are using filesystem cache. '
-            '\nThis is for TESTING purposes only, DO NOT USE on production sites.',
-            RuntimeWarning
+            "\n[CTFd Whale] Warning: looks like you are using filesystem cache. "
+            "\nThis is for TESTING purposes only, DO NOT USE on production sites.",
+            RuntimeWarning,
+            stacklevel=2,
         )
-        self.key = 'ctfd_whale_lock-' + str(kwargs.get('user_id', 0))
+        self.key = "ctfd_whale_lock-" + str(kwargs.get("user_id", 0))
         self.global_port_key = "ctfd_whale-port-set"
         self.global_network_key = "ctfd_whale-network-set"
 
@@ -108,7 +119,7 @@ class FilesystemCacheProvider:
 class RedisCacheProvider(FlaskRedis):
     def __init__(self, app, *args, **kwargs):
         super().__init__(app)
-        self.key = 'ctfd_whale_lock-' + str(kwargs.get('user_id', 0))
+        self.key = "ctfd_whale_lock-" + str(kwargs.get("user_id", 0))
         self.current_lock = None
         self.global_port_key = "ctfd_whale-port-set"
         self.global_network_key = "ctfd_whale-network-set"

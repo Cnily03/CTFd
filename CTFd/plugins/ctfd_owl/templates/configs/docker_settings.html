@@ -22,7 +22,7 @@
 			<label>
 				Max Container Count
 				<small class="form-text text-muted">
-					Max Container Count
+					The maximum number of countainers allowed on the server
 				</small>
 			</label>
 			<input type="text" class="form-control" id="docker-max-container-count" name="docker_max_container_count" value="{{ configs.get("docker_max_container_count") }}">
@@ -31,21 +31,40 @@
 			<label>
 				Docker Container Timeout
 				<small class="form-text text-muted">
-					Docker container running timeout. 3600 mean 3600s.
+					Docker container running timeout, in seconds.
 				</small>
 			</label>
 			<input type="number" class="form-control" id="docker-timeout" name="docker_timeout" value="{{ configs.get("docker_timeout", "3600") }}">
 		</div>
         <div class="form-group">
 			<label>
+				Max Opened Count
+				<small class="form-text text-muted">
+					The maximum number of countainers opened by a user
+				</small>
+			</label>
+			<input type="text" class="form-control" id="docker-max-opened-count" name="docker_max_opened_count" value="{{ configs.get("docker_max_opened_count") }}">
+		</div>
+        <div class="form-group">
+			<label>
 				Max Renewal Times
 				<small class="form-text text-muted">
-					Max Renewal Times
+					The maximum times a user is allowed to renew a container
 				</small>
 			</label>
 			<input type="text" class="form-control" id="docker-max-renew-count" name="docker_max_renew_count" value="{{ configs.get("docker_max_renew_count") }}">
 		</div>
-		
+
+        <div class="form-group">
+			<label>
+				Auto Connect Containers
+				<small class="form-text text-muted">
+					Decide which container will be connected to challenge container whose frp type is HTTP, split by comma
+				</small>
+			</label>
+			<input type="text" class="form-control" id="docker-auto-connect-containers" name="docker_auto_connect_containers" value="{{ configs.get("docker_auto_connect_containers") }}">
+		</div>
+
 		<button type="submit" class="btn btn-md btn-primary float-right">Update</button>
 	</form>
 </div>

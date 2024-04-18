@@ -23,9 +23,9 @@ docker-compose -f CTFd/docker-compose.yml exec ctfd python manage.py set_config 
 
 The commands above tries to install `docker-ce`，`python3-pip` and `docker-compose`. Make sure the following requirements are satisfied before you execute them:
 
-* have `curl`, `git`, `python3` and `pip` installed
-* GitHub is reachable
-* Docker Registry is reachable
+- have `curl`, `git`, `python3` and `pip` installed
+- GitHub is reachable
+- Docker Registry is reachable
 
 ## Installation
 
@@ -191,8 +191,8 @@ CTFd/
 
 After finishing everything above:
 
-* map docker socket into CTFd container
-* Attach CTFd container to frp_connect
+- map docker socket into CTFd container
+- Attach CTFd container to frp_connect
 
 ```yml
 services:
@@ -229,12 +229,12 @@ docker network ls -f "label=com.docker.compose.project=ctfd" --format "{{.Name}}
 
 #### frp related configs
 
-* `HTTP Domain Suffix` should be consistent with `subdomain_host` in frps
-* `HTTP Port` with `vhost_http_port` in frps
-* `Direct IP Address` should be a hostname/ip address that can be used to access frps
-* `Direct Minimum Port` and `Direct Maximum Port`, you know what to do
-* as long as `API URL` is filled in correctly, Whale will read the config of the connected frpc into `Frpc config template`
-* setting `Frpc config template` will override contents in `frpc.ini`
+- `HTTP Domain Suffix` should be consistent with `subdomain_host` in frps
+- `HTTP Port` with `vhost_http_port` in frps
+- `Direct IP Address` should be a hostname/ip address that can be used to access frps
+- `Direct Minimum Port` and `Direct Maximum Port`, you know what to do
+- as long as `API URL` is filled in correctly, Whale will read the config of the connected frpc into `Frpc config template`
+- setting `Frpc config template` will override contents in `frpc.ini`
 
 Whale should be kinda usable at this moment.
 
@@ -246,8 +246,8 @@ remove the port mapping rule for frps vhost http port(8001) in the compose file
 
 If you wnat to go deeper:
 
-* add nginx to `default` and `internal` network
-* remove CTFd from `default` and remove the mapped 8000 port
+- add nginx to `default` and `internal` network
+- remove CTFd from `default` and remove the mapped 8000 port
 
 add following server block to `./conf/nginx/nginx.conf`:
 
@@ -274,8 +274,8 @@ Take a look at <https://github.com/CTFTraining>
 
 In one word, a `FLAG` variable will be passed into the container when it's started. You should write your own startup script (usually with bash and sed) to:
 
-* replace your flag with the generated flag
-* remove or override the `FLAG` variable
+- replace your flag with the generated flag
+- remove or override the `FLAG` variable
 
 PLEASE create challenge images with care.
 
@@ -285,7 +285,7 @@ PLEASE create challenge images with care.
 
 ```json
 {
-    "hostname": "image",
+  "hostname": "image"
 }
 ```
 
@@ -295,9 +295,9 @@ see how grouped containers are created in the [code](utils/docker.py#L58)
 
 ## Security
 
-* Please do not allow untrusted people to access the admin account. Theoretically there's an SSTI vulnerability in the config page.
-* Do not set bind_addr of the frpc to `0.0.0.0` if you are following this guide. This may enable contestants to override frpc configurations.
-* If you are annoyed by the complicated configuration, and you just want to set bind_addr = 0.0.0.0, remember to enable Basic Auth included in frpc, and set API URL accordingly, for example, `http://username:password@frpc:7400`
+- Please do not allow untrusted people to access the admin account. Theoretically there's an SSTI vulnerability in the config page.
+- Do not set bind_addr of the frpc to `0.0.0.0` if you are following this guide. This may enable contestants to override frpc configurations.
+- If you are annoyed by the complicated configuration, and you just want to set bind_addr = 0.0.0.0, remember to enable Basic Auth included in frpc, and set API URL accordingly, for example, `http://username:password@frpc:7400`
 
 ## Advanced Deployment
 
