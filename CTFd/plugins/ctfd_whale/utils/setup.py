@@ -7,7 +7,7 @@ from ..models import WhaleRedirectTemplate, db
 
 def read_frpc_config():
     frpc_path = "/opt/CTFd/conf/frp/frpc.ini"
-    frpc_config = "[common]\r\ntoken = YOUR_TOKEN\r\nserver_addr = frps\r\nserver_port = 9123\r\nadmin_addr = 0.0.0.0\r\ndmin_port = 7400\r\npool_count = 200\r\ntls_enable = true\r\n\r\n"
+    frpc_config = "[common]\r\ntoken = YOUR_TOKEN\r\nserver_addr = frps\r\nserver_port = 9123\r\nadmin_addr = 0.0.0.0\r\ndmin_port = 7400\r\npool_count = 200\r\ntls_enable = true\r\n"
     try:
         with open(frpc_path, "r") as f:
             frpc_config = f.read()
@@ -15,7 +15,7 @@ def read_frpc_config():
         sys.stderr.write("Error: {} not found\n".format(frpc_path))
     finally:
         frpc_config = frpc_config.replace("\r\n", "\n")
-        frpc_config = frpc_config.strip() + "\n\n"
+        frpc_config = frpc_config.strip() + "\n"
     return frpc_config
 
 

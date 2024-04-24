@@ -3,6 +3,7 @@ from sqlalchemy.sql.expression import union_all
 from CTFd.cache import cache
 from CTFd.models import Awards, Challenges, Solves, Teams, Users, db
 from CTFd.utils import get_config
+from CTFd.utils.config import get_bonus_score_rate
 from CTFd.utils.dates import unix_time_to_utc
 from CTFd.utils.modes import get_model
 
@@ -21,16 +22,44 @@ def get_standings(count=None, admin=False, fields=None):
         fields = []
     Model = get_model()
 
+    RankedSolves: Solves = (
+        db.session.query(
+            Solves,
+            Solves.account_id.label("account_id"),
+            db.func.rank()
+            .over(partition_by=Solves.challenge_id, order_by=(Solves.date.asc()))
+            .label("solve_rank"),
+        ).subquery()
+    ).columns
+
+    rank_rate_array = get_bonus_score_rate()
+
+    adjusted_scores = db.case(
+        [
+            (Model.banned == True, Challenges.value),
+            (Model.hidden == True, Challenges.value),
+        ]
+        + [
+            (
+                RankedSolves.solve_rank == i + 1,
+                Challenges.value * (rank_rate_array[i] + 1),
+            )
+            for i in range(len(rank_rate_array))
+        ],
+        else_=Challenges.value,
+    )
+
     scores = (
         db.session.query(
-            Solves.account_id.label("account_id"),
-            db.func.sum(Challenges.value).label("score"),
-            db.func.max(Solves.id).label("id"),
-            db.func.max(Solves.date).label("date"),
+            RankedSolves.account_id.label("account_id"),
+            db.cast(db.func.sum(adjusted_scores), db.Float).label("score"),
+            db.func.max(RankedSolves.id).label("id"),
+            db.func.max(RankedSolves.date).label("date"),
         )
         .join(Challenges)
+        .join(Model)
         .filter(Challenges.value != 0)
-        .group_by(Solves.account_id)
+        .group_by(RankedSolves.account_id)
     )
 
     awards = (
@@ -132,16 +161,45 @@ def get_standings(count=None, admin=False, fields=None):
 def get_team_standings(count=None, admin=False, fields=None):
     if fields is None:
         fields = []
+
+    RankedSolves: Solves = (
+        db.session.query(
+            Solves,
+            # Solves.account_id.label("account_id"),
+            db.func.rank()
+            .over(partition_by=Solves.challenge_id, order_by=(Solves.date.asc()))
+            .label("solve_rank"),
+        ).subquery()
+    ).columns
+
+    rank_rate_array = get_bonus_score_rate()
+
+    adjusted_scores = db.case(
+        [
+            (Teams.banned == True, Challenges.value),
+            (Teams.hidden == True, Challenges.value),
+        ]
+        + [
+            (
+                RankedSolves.solve_rank == i + 1,
+                Challenges.value * (rank_rate_array[i] + 1),
+            )
+            for i in range(len(rank_rate_array))
+        ],
+        else_=Challenges.value,
+    )
+
     scores = (
         db.session.query(
-            Solves.team_id.label("team_id"),
-            db.func.sum(Challenges.value).label("score"),
-            db.func.max(Solves.id).label("id"),
-            db.func.max(Solves.date).label("date"),
+            RankedSolves.team_id.label("team_id"),
+            db.cast(db.func.sum(adjusted_scores), db.Float).label("score"),
+            db.func.max(RankedSolves.id).label("id"),
+            db.func.max(RankedSolves.date).label("date"),
         )
         .join(Challenges)
+        .join(Teams)
         .filter(Challenges.value != 0)
-        .group_by(Solves.team_id)
+        .group_by(RankedSolves.team_id)
     )
 
     awards = (
@@ -224,16 +282,45 @@ def get_team_standings(count=None, admin=False, fields=None):
 def get_user_standings(count=None, admin=False, fields=None):
     if fields is None:
         fields = []
+
+    RankedSolves: Solves = (
+        db.session.query(
+            Solves,
+            # Solves.account_id.label("account_id"),
+            db.func.rank()
+            .over(partition_by=Solves.challenge_id, order_by=(Solves.date.asc()))
+            .label("solve_rank"),
+        ).subquery()
+    ).columns
+
+    rank_rate_array = get_bonus_score_rate()
+
+    adjusted_scores = db.case(
+        [
+            (Users.banned == True, Challenges.value),
+            (Users.hidden == True, Challenges.value),
+        ]
+        + [
+            (
+                RankedSolves.solve_rank == i + 1,
+                Challenges.value * (rank_rate_array[i] + 1),
+            )
+            for i in range(len(rank_rate_array))
+        ],
+        else_=Challenges.value,
+    )
+
     scores = (
         db.session.query(
-            Solves.user_id.label("user_id"),
-            db.func.sum(Challenges.value).label("score"),
-            db.func.max(Solves.id).label("id"),
-            db.func.max(Solves.date).label("date"),
+            RankedSolves.user_id.label("user_id"),
+            db.cast(db.func.sum(adjusted_scores), db.Float).label("score"),
+            db.func.max(RankedSolves.id).label("id"),
+            db.func.max(RankedSolves.date).label("date"),
         )
         .join(Challenges)
+        .join(Users)
         .filter(Challenges.value != 0)
-        .group_by(Solves.user_id)
+        .group_by(RankedSolves.user_id)
     )
 
     awards = (

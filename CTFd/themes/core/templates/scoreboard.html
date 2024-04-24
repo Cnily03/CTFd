@@ -50,7 +50,7 @@
 							</a>
 						</td>
 						<td>{{ standing.affiliation }}</td>
-						<td>{{ standing.score }}</td>
+						<td>{{ standing.score|round_str(2) }}</td>
 					</tr>
 				{% endfor %}
 				</tbody>

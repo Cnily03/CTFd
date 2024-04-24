@@ -55,6 +55,24 @@ def is_scoreboard_frozen():
     return False
 
 
+def get_bonus_score_rate():
+    conf_string = get_config("bonus_score_rate", "0.05, 0.03, 0.01")
+    conf_array = conf_string.split(",")
+    rates = []
+    try:
+        for r in conf_array:
+            r = r.strip()
+            if r.endswith("%"):
+                rates.append(float(r[:-1]) / 100)
+            else:
+                rates.append(float(r))
+    except ValueError:
+        rates = [0]
+    if len(rates) < 1:
+        rates = [0]
+    return rates
+
+
 def can_send_mail():
     return mailserver() or mailgun()
 

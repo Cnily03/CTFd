@@ -12,8 +12,9 @@
 实现的功能
 
 - [x] 支持容器多开
-- [x] Owl 环境挂载 Flag
-- [x] Owl 文件挂载 Flag
+- [x] 支持前 N 血动态积分（含设置）
+- [x] Owl 环境挂载 flag
+- [x] Owl 文件挂载 flag
 - [x] Owl 子域名访问题目
 - [x] Owl 端口访问题目
 - [x] Owl docker compose 安全检查（防止穿越泄漏宿主机文件）
@@ -23,13 +24,13 @@
 
 根据注释内容运行 `manual.docker-swarm.sh` 完成 docker 集群部署
 
-修改 `manual.init-env.sh`，取消 h 下面几行的注释，进行值的替换，然后运行它
+修改 `manual.init-env.sh`，取消下面几行的注释，进行值的替换，然后运行它
 
 ```ini
 CTFD_URL=    # 网站域名
 DIRECT_URL=  # 使用端口访问容器的域名
 DYNAMIC_URL= # 使用动态子域名访问容器的域名
-UUID=        # Frp的Token
+FRP_TOKEN=   # Frp 的 Token
 ```
 
 > [!Caution]
@@ -41,7 +42,9 @@ UUID=        # Frp的Token
 
 题目样例位于 `CTFd/plugins/ctfd_owl/source` 目录下，一个 `docker-compose.yml` 的样例如下
 
-**挂载方式**
+### 挂载方式
+
+容器运行时会在 `docker-compose.yml` 同级目录下生成 `flag` 和 `.env` 文件，可以通过文件挂载或环境变量的方式引入 flag
 
 ```yaml
 services:
@@ -66,16 +69,22 @@ networks:
   #      name: frp_containers
 ```
 
-**Frp 方式（DIRECT）**
+### Frp 方式（DIRECT）
+
+在端口中使用 `9999:<port>` 的方式，其中 `9999` 会被替换为随机端口
 
 ```yaml
 services:
   web:
     ports:
-      - 9999:80 # 这是 DIRECT 映射方式，其中 9999 会被替换为随机端口
+      - 9999:80
 ```
 
-**Frp 方式（HTTP）**
+### Frp 方式（HTTP）
+
+当只有一个 service 时，你不需要做任何事，Frp HTTP 模式会自动在该容器映射 HTTP 端口
+
+如果有多个 service，你需要在 `docker-compose.yml` 中指定 `container_name` 为 `frp-http`，以告知在该容器（而不是其它 service 对应的容器）映射 HTTP 端口
 
 ```yaml
 services:

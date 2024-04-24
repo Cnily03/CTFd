@@ -158,6 +158,15 @@ def run_upgrade():
 
 def create_app(config="CTFd.config.Config"):
     app = CTFdFlask(__name__)
+
+    @app.template_filter()
+    def round_str(value, precision=0):
+        r = str(round(value, precision))
+        if r.find(".") == -1:
+            return r
+        else:
+            return r.rstrip("0").rstrip(".")
+
     with app.app_context():
         app.config.from_object(config)
 

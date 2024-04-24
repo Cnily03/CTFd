@@ -78,7 +78,9 @@ class FrpUtils:
             output = rules
 
         output += self.get_rule()
-        output = configs.get("frpc_config_template") + "\n" + output
+        if not output.startswith("\n"):
+            output = "\n" + output
+        output = configs.get("frpc_config_template") + output
 
         frp_api_url = configs.get("frp_api_url", "http://frpc:7400")
         if frp_api_url[-1] == "/":

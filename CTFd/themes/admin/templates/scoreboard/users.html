@@ -37,7 +37,7 @@
 					{% endif %}
 				</a>
 			</td>
-			<td>{{ standing.score }}</td>
+			<td>{{ standing.score|round_str(5) }}</td>
 			<td>
 				{% if standing.hidden %}
 					<span class="badge badge-danger">hidden</span>

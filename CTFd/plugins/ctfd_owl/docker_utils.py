@@ -298,7 +298,11 @@ class DockerUtils:
             for sv_name in conf["services"]:
                 conf_sv = conf["services"][sv_name]
                 if "ports" in conf_sv:
-                    del conf_sv["ports"]
+                    # remove each port reflection
+                    new_sv_p = []
+                    for p in conf_sv["ports"]:
+                        new_sv_p.append(str(p).split(":")[-1])
+                    conf_sv["ports"] = new_sv_p
                 if "container_name" in conf_sv:
                     if (
                         conf_sv["container_name"] == KEY_NAME

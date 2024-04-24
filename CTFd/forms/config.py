@@ -88,6 +88,14 @@ class AccountSettingsForm(BaseForm):
     submit = SubmitField("Update")
 
 
+class ChallengeSettingsForm(BaseForm):
+    bonus_score_rate = StringField(
+        "Bonus Score Rate",
+        description="The extra score date the player will be awarded, who gives priority to solving this challenge. Splited by comma.",
+        default="0.05, 0.03, 0.01",
+    )
+
+
 class ExportCSVForm(BaseForm):
     table = SelectField("Database Table", choices=get_dumpable_tables())
     submit = SubmitField("Download CSV")
