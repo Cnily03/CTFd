@@ -1,0 +1,46 @@
+<div role="tabpanel" class="tab-pane config-section" id="webhook">
+	{%
+		with form = Forms.config.WebhookSettingsForm(
+			webhook_uri=webhook_uri,
+			webhook_secret=webhook_secret,
+			webhook_algorithm=webhook_algorithm
+		)
+	%}
+	{% set webhook_secret = webhook_secret or form.webhook_secret.default %}
+	{% set webhook_algorithm = webhook_algorithm or form.webhook_algorithm.default %}
+	<form method="POST" autocomplete="off" class="w-100">
+
+		<div class="form-group">
+			{{ form.webhook_uri.label }}
+			{{ form.webhook_uri(class="form-control", value=webhook_uri or 'None', placeholder="http://webhook.example.com/") }}
+			<small class="form-text text-muted">
+				{{ form.webhook_uri.description }}
+			</small>
+		</div>
+
+		<div class="form-group">
+			{{ form.webhook_secret.label }}
+			{{ form.webhook_secret(class="form-control", value=webhook_secret, placeholder="Your Secret") }}
+			<small class="form-text text-muted">
+				{{ form.webhook_secret.description }}
+			</small>
+		</div>
+
+		<div class="form-group">
+			{{ form.webhook_algorithm.label }}
+			<select class="form-control custom-select" name="webhook_algorithm">
+				{% for algorithm in form.webhook_algorithm.choices %}
+				<option value="{{ algorithm[0] }}" {% if webhook_algorithm == algorithm[0] %}selected{% endif %}>
+					{{ algorithm[1] }}
+				</option>
+				{% endfor %}
+			</select>
+			<small class="form-text text-muted">
+				{{ form.webhook_algorithm.description }}
+			</small>
+		</div>
+
+		<button type="submit" class="btn btn-md btn-primary float-right">Update</button>
+	</form>
+	{% endwith %}
+</div>

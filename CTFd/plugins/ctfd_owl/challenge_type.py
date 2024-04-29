@@ -16,9 +16,11 @@ from CTFd.models import (
 )
 from CTFd.plugins.challenges import BaseChallenge
 from CTFd.plugins.flags import FlagException, get_flag_class
+from CTFd.utils import get_config
 from CTFd.utils.modes import get_model
 from CTFd.utils.uploads import delete_file
 from CTFd.utils.user import get_ip
+from CTFd.utils.webhook import Event, Webhook
 
 from .extensions import get_mode
 from .models import DynamicCheckChallenge, OwlContainers
@@ -256,3 +258,6 @@ class DynamicCheckValueChallenge(BaseChallenge):
         chal.value = value
 
         db.session.commit()
+
+        account_id = user.id if get_config("user_mode") == "users" else team.id
+        Webhook.send(Event.solve(challenge.id, account_id))

@@ -240,7 +240,11 @@ $(() => {
             });
         };
         // Check if the challenge doesn't have any flags before marking visible
-        if (response.data.length === 0 && params.state === "visible") {
+        if (
+          response.data.length === 0 &&
+          params.state === "visible" &&
+          params.flag_type !== "dynamic"
+        ) {
           ezQuery({
             title: "Missing Flags",
             body:

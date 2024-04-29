@@ -7,11 +7,11 @@
 	<form method="POST" autocomplete="off" class="w-100">
 
 		<div class="form-group">
-			{{ form.bonus_score_rate.label }}
-			{{ form.bonus_score_rate(class="form-control", value=bonus_score_rate or form.bonus_score_rate.default) }}
-			<small class="form-text text-muted">
-				{{ form.bonus_score_rate.description }}
-			</small>
+			<label for="bonus_score_rate">
+				{{ form.bonus_score_rate.label|striptags }}
+				<small class="form-text text-muted">{{ form.bonus_score_rate.description }}</small>
+			</label>
+			{{ form.bonus_score_rate(class="form-control", value=bonus_score_rate or form.bonus_score_rate.default, placeholder=form.bonus_score_rate.default) }}
 		</div>
 
 		<button type="submit" class="btn btn-md btn-primary float-right">Update</button>

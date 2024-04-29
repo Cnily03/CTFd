@@ -13,6 +13,7 @@
 
 - [x] 支持容器多开
 - [x] 支持前 N 血动态积分（含设置）
+- [x] 支持 Webhook
 - [x] Owl 环境挂载 flag
 - [x] Owl 文件挂载 flag
 - [x] Owl 子域名访问题目

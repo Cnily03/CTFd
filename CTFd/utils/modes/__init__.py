@@ -9,6 +9,20 @@ USERS_MODE = "users"
 TEAMS_MODE = "teams"
 
 
+def generate_user_url(user_id, admin=False):
+    if admin:
+        return url_for("admin.users_detail", user_id=user_id)
+    else:
+        return url_for("users.public", user_id=user_id)
+
+
+def generate_team_url(team_id, admin=False):
+    if admin:
+        return url_for("admin.teams_detail", team_id=team_id)
+    else:
+        return url_for("teams.public", team_id=team_id)
+
+
 def generate_account_url(account_id, admin=False):
     if get_config("user_mode") == USERS_MODE:
         if admin:

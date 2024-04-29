@@ -12,8 +12,10 @@ from CTFd.models import (
 )
 from CTFd.plugins import register_plugin_assets_directory
 from CTFd.plugins.flags import FlagException, get_flag_class
+from CTFd.utils import get_config
 from CTFd.utils.uploads import delete_file
 from CTFd.utils.user import get_ip
+from CTFd.utils.webhook import Event, Webhook
 
 
 class BaseChallenge(object):
@@ -149,6 +151,9 @@ class BaseChallenge(object):
         )
         db.session.add(solve)
         db.session.commit()
+
+        account_id = user.id if get_config("user_mode") == "users" else team.id
+        Webhook.send(Event.solve(challenge.id, account_id))
 
     @classmethod
     def fail(cls, user, team, challenge, request):

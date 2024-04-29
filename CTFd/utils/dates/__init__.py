@@ -71,3 +71,7 @@ def unix_time_to_utc(t):
 
 def isoformat(dt):
     return dt.isoformat() + "Z"
+
+
+def tsformat(dt):
+    return int(dt.timestamp() * 1000)

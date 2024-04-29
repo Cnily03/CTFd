@@ -55,6 +55,18 @@ def is_scoreboard_frozen():
     return False
 
 
+def get_webhook_config():
+    uri = get_config("webhook_uri", None)
+    if uri is None or uri == "None" or uri == "":
+        uri = None
+    elif not uri.startswith("http://") and not uri.startswith("https://"):
+        uri = "http://" + uri
+
+    secret = str(get_config("webhook_secret", "secret_ctfd_webhook")).encode("utf-8")
+    algorithm = get_config("webhook_algorithm", "hmac_sha1")
+    return uri, secret, algorithm
+
+
 def get_bonus_score_rate():
     conf_string = get_config("bonus_score_rate", "0.05, 0.03, 0.01")
     conf_array = conf_string.split(",")

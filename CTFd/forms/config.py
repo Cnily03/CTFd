@@ -90,9 +90,34 @@ class AccountSettingsForm(BaseForm):
 
 class ChallengeSettingsForm(BaseForm):
     bonus_score_rate = StringField(
-        "Bonus Score Rate",
-        description="The extra score date the player will be awarded, who gives priority to solving this challenge. Splited by comma.",
+        label="Bonus Score Rate",
+        description="The extra score date the player will be awarded, who gives priority to solving this challenge, separated by comma",
         default="0.05, 0.03, 0.01",
+    )
+
+
+class WebhookSettingsForm(BaseForm):
+    webhook_uri = StringField(
+        "Webhook URI",
+        description="The URI to send webhook payloads to (Set None to disable)",
+    )
+    webhook_secret = StringField(
+        "Webhook Secret",
+        description="The HTTP header will have 'X-CTFd-Hook-Sig' whose value is signed by algorithm with this secret",
+        default="secret_ctfd_webhook",
+    )
+    webhook_algorithm = SelectField(
+        "Webhook Signature Algorithm",
+        description="The algorithm used to sign the webhook payload",
+        choices=[
+            ("hmac_md5", "HMAC-MD5"),
+            ("hmac_sha1", "HMAC-SHA1"),
+            ("hmac_sha256", "HMAC-SHA256"),
+            ("hmac_sha384", "HMAC-SHA384"),
+            ("hmac_sha512", "HMAC-SHA512"),
+            ("hex", "Hex of Secret"),
+        ],
+        default="hmac_sha1",
     )
 
 
