@@ -79,9 +79,9 @@ function loadInfo () {
             var panel_html = '<h5 class="card-title">Instance Info</h5><hr>' +
                     '<h6 class="card-subtitle mb-2 text-muted" id="owl-challenge-count-down">Remaining Time: ' + response.remaining_time + 's</h6>';
             if(response.type === 'http') {
-                panel_html += '<p class="card-text">Domain: <br/>' + '<a href="//' + response.domain + '" target="_blank">' + response.domain + '</a></p>';
+                panel_html += '<p class="card-text">Domain: <br/>' + '<a href="http://' + response.domain + '" target="_blank">' + response.domain + '</a></p>';
             } else {
-                panel_html += '<p class="card-text">Domain: <br/>' + '<a href="//' + response.ip + ':' + response.port + '" target="_blank">' + response.ip + ':' + response.port + '</a></p>';
+                panel_html += '<p class="card-text">Domain: <br/>' + '<a href="http://' + response.ip + ':' + response.port + '" target="_blank">' + response.ip + ':' + response.port + '</a></p>';
             }
             panel_html += '<button type="button" class="btn btn-danger card-link" id="owl-button-destroy" onclick="CTFd._internal.challenge.destroy()">Destroy</button>' +
                           '<button type="button" class="btn btn-success card-link" id="owl-button-renew" onclick="CTFd._internal.challenge.renew()">Renew</button>';

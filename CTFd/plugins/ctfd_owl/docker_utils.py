@@ -89,7 +89,9 @@ class DockerUtils:
 
     @staticmethod
     def get_name(user_id, challenge_id, category):
-        return "user{}_challenge{}_{}".format(user_id, challenge_id, category).lower()
+        return "ctfd-chall_user{}_challenge{}_{}".format(
+            user_id, challenge_id, category
+        ).lower()
 
     @staticmethod
     def get_frp_http_container_name(name, docker_id):

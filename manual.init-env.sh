@@ -18,7 +18,7 @@ sed -i "s/$ORI_DIRECT_URL/$DIRECT_URL/g" /opt/CTFd/CTFd/plugins/ctfd_whale/utils
 sed -i "s/$ORI_FRP_TOKEN/$FRP_TOKEN/g" /opt/CTFd/CTFd/plugins/ctfd_whale/utils/setup.py
 
 sed -i "s/$ORI_DYNAMIC_URL/$DYNAMIC_URL/g" /opt/CTFd/CTFd/plugins/ctfd_owl/setup.py
-sed -i "s/d$ORI_DIRECT_URL/$DIRECT_URL/g" /opt/CTFd/CTFd/plugins/ctfd_owl/setup.py
+sed -i "s/$ORI_DIRECT_URL/$DIRECT_URL/g" /opt/CTFd/CTFd/plugins/ctfd_owl/setup.py
 sed -i "s/$ORI_FRP_TOKEN/$FRP_TOKEN/g" /opt/CTFd/CTFd/plugins/ctfd_owl/setup.py
 
 sed -i "s/$ORI_CTFD_URL/$CTFD_URL/g" /opt/CTFd/conf/nginx/http.conf
