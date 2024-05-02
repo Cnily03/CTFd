@@ -94,6 +94,13 @@ class DockerUtils:
         ).lower()
 
     @staticmethod
+    def get_container_id(container_name):
+        client = DockerUtils.get_docker_client()
+        container = client.containers.get(container_name)
+        container_short_id = container.short_id
+        return container_short_id
+
+    @staticmethod
     def get_frp_http_container_name(name, docker_id):
         return name + "_" + docker_id
 

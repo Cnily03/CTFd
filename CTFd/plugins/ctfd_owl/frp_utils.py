@@ -47,20 +47,24 @@ class FrpUtils:
             redirect_port = dynamic_docker_challenge.redirect_port
             category = dynamic_docker_challenge.category
             name = DockerUtils.get_name(c.user_id, c.challenge_id, category)
-            container_service_local_ip = DockerUtils.get_frp_http_container_name(
+            container_frp_name = DockerUtils.get_frp_http_container_name(
                 name, c.docker_id
             )
             if dynamic_docker_challenge.redirect_type.upper() == "HTTP":
+                container_service_local_ip = DockerUtils.get_container_id(
+                    container_frp_name
+                )
                 output += http_template % (
-                    container_service_local_ip,
+                    container_frp_name,
                     container_service_local_ip,
                     redirect_port,
                     c.docker_id,
                 )
             else:
                 pass  # have been set in compose, no need to set again
+                # container_service_local_ip = DockerUtils.get_container_id(name)
                 # output += direct_template % (
-                #       container_service_local_ip
+                #       name
                 #     , container_service_local_ip
                 #     , redirect_port
                 #     , c.port
