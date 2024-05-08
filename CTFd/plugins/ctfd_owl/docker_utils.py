@@ -260,7 +260,9 @@ class DockerUtils:
         for sv_name in conf["services"]:
             conf_sv = conf["services"][sv_name]
             if "build" in conf_sv and "image" not in conf_sv:
-                conf_sv["image"] = local_image
+                conf_sv["image"] = (
+                    local_image[0] + "_" + resv_alnum(sv_name) + ":" + local_image[1]
+                )
 
         """Port Assign"""
         # # check and collect ports
@@ -426,7 +428,7 @@ class DockerUtils:
             compose_conf, port = DockerUtils.fmt_compose_file(
                 content=open(compose_fp).read(),
                 pwd=dname,
-                local_image=image_name + ":" + image_tag,
+                local_image=(image_name, image_tag),
                 port_range=(min_port, max_port),
                 frp_type=frp_type,
                 frp_http_container_name=None
